@@ -4,6 +4,8 @@ class Event {
     var eventTitle: String? = null
     var eventId: String? = null
     var externalEventId: String? = null
+    var originalEventId: String? = null
+    var originalExternalEventId: String? = null
     var guid: String? = null
     var calendarId: String? = null
     var eventDescription: String? = null
@@ -16,6 +18,8 @@ class Event {
     var eventURL: String? = null
     var attendees: MutableList<Attendee> = mutableListOf()
     var recurrenceRule: RecurrenceRule? = null
+    var occurrenceDate: Long? = null
+    var exceptionDates: MutableList<Long> = mutableListOf()
     var organizer: Attendee? = null
     var reminders: MutableList<Reminder> = mutableListOf()
     var availability: Availability? = null

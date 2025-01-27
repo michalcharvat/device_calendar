@@ -37,6 +37,8 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin, EKEventViewDele
     struct Event: Codable {
         let externalEventId: String
         let eventId: String
+        let originalEventId: String?
+        let originalExternalEventId: String?
         let calendarId: String
         let eventTitle: String
         let eventDescription: String?
@@ -48,6 +50,7 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin, EKEventViewDele
         let eventLocation: String?
         let eventURL: String?
         let recurrenceRule: RecurrenceRule?
+        let occurrenceDate: Int64?
         let organizer: Attendee?
         let reminders: [Reminder]
         let availability: Availability?
@@ -519,6 +522,8 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin, EKEventViewDele
         let event = Event(
             externalEventId: ekEvent.calendarItemExternalIdentifier,
             eventId: ekEvent.eventIdentifier,
+            originalEventId: ekEvent.eventIdentifier, // not sure
+            originalExternalEventId: ekEvent.calendarItemExternalIdentifier!.components(separatedBy: "/").first,
             calendarId: calendarId,
             eventTitle: ekEvent.title ?? "New Event",
             eventDescription: ekEvent.notes,
@@ -530,6 +535,7 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin, EKEventViewDele
             eventLocation: ekEvent.location,
             eventURL: ekEvent.url?.absoluteString,
             recurrenceRule: recurrenceRule,
+            occurrenceDate: Int64(ekEvent.occurrenceDate.millisecondsSinceEpoch),
             organizer: convertEkParticipantToAttendee(ekParticipant: ekEvent.organizer),
             reminders: reminders,
             availability: convertEkEventAvailability(ekEventAvailability: ekEvent.availability),

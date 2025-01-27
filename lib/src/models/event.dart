@@ -15,6 +15,12 @@ class Event {
   /// Read-only. The calendar item’s external identifier as provided by the calendar server.
   String? externalEventId;
 
+  /// Read-only. Recurence original eventId
+  String? originalEventId;
+
+  /// Read-only. Recurence original externalEventId
+  String? originalExternalEventId;
+
   /// The unique identifier for this event.
   String? guid;
 
@@ -48,6 +54,12 @@ class Event {
   /// The recurrence rule for this event
   RecurrenceRule? recurrenceRule;
 
+  /// The original occurrence date of an event if it is part of a recurring series.
+  TZDateTime? occurrenceDate;
+
+  /// The recurrence exception dates for this event
+  List<DateTime>? recurrenceExceptionDates;
+
   /// A list of reminders (by minutes) for this event
   List<Reminder>? reminders;
 
@@ -79,6 +91,8 @@ class Event {
   Event(this.calendarId,
       {this.eventId,
       this.externalEventId,
+      this.originalEventId,
+      this.originalExternalEventId,
       this.guid,
       this.title,
       this.start,
@@ -86,6 +100,8 @@ class Event {
       this.description,
       this.attendees,
       this.recurrenceRule,
+      this.occurrenceDate,
+      this.recurrenceExceptionDates,
       this.reminders,
       this.availability = Availability.Busy,
       this.location,
@@ -127,6 +143,8 @@ class Event {
 
     eventId = json['eventId'];
     externalEventId = json['externalEventId'];
+    originalEventId = json['originalEventId'];
+    originalExternalEventId = json['originalExternalEventId'];
     guid = json['guid'];
     calendarId = json['calendarId'];
     title = json['eventTitle'];
@@ -195,6 +213,14 @@ class Event {
       }
     }
 
+    // Occurrence Date from iOS - timezone is set in eventStartTimeZone
+    if (json['occurrenceDate'] != null) {
+      int? occurrenceTimestamp = json['occurrenceDate'];
+      occurrenceDate = occurrenceTimestamp != null
+          ? TZDateTime.fromMillisecondsSinceEpoch(startTimeZone, occurrenceTimestamp)
+          : TZDateTime.now(local);
+    }
+
     if (json['recurrenceRule'] != null) {
       // debugPrint(
       //     "EVENT_MODEL: $title; START: $start, END: $end RRULE = ${json['recurrenceRule']}");
@@ -251,6 +277,8 @@ class Event {
     data['calendarId'] = calendarId;
     data['eventId'] = eventId;
     data['externalEventId'] = externalEventId;
+    data['originalEventId'] = originalEventId;
+    data['originalExternalEventId'] = originalExternalEventId;
     data['guid'] = guid;
     data['eventTitle'] = title;
     data['eventDescription'] = description;
@@ -281,6 +309,15 @@ class Event {
     if (recurrenceRule != null) {
       data['recurrenceRule'] = recurrenceRule?.toJson();
       // print("EVENT_TO_JSON_RRULE: ${recurrenceRule?.toJson()}");
+    }
+
+    if (occurrenceDate != null) {
+      data['occurrenceDate'] = occurrenceDate?.millisecondsSinceEpoch;
+    }
+
+    if (recurrenceExceptionDates != null) {
+      data['recurrenceExceptionDates'] =
+          recurrenceExceptionDates?.map((e) => e.toIso8601String()).toList();
     }
 
     if (reminders != null) {
@@ -361,6 +398,8 @@ class Event {
       event.url?.toString() ?? '',
       event.attendees?.map((a) => a?.toJson().toString()).join(',') ?? '',
       event.recurrenceRule?.toJson().toString() ?? '',
+      event.recurrenceExceptionDates?.map((r) => r.millisecondsSinceEpoch.toString()).join(',') ?? '',
+      event.occurrenceDate?.millisecondsSinceEpoch.toString() ?? '',
       event.reminders?.map((r) => r.toJson().toString()).join(',') ?? '',
       event.availability.enumToString,
       event.status?.enumToString ?? '',

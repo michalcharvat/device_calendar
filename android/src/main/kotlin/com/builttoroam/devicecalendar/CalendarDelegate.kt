@@ -1063,6 +1063,13 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
         val begin = cursor.getLong(Cst.EVENT_PROJECTION_BEGIN_INDEX)
         val end = cursor.getLong(Cst.EVENT_PROJECTION_END_INDEX)
         val recurringRule = cursor.getString(Cst.EVENT_PROJECTION_RECURRING_RULE_INDEX)
+        val recurringExdate = cursor.getString(Cst.EVENT_PROJECTION_RECURRING_EXDATE_INDEX)
+        val recurringExrule = cursor.getString(Cst.EVENT_PROJECTION_RECURRING_EXRULE_INDEX)
+        val originalInstanceTime = cursor.getLong(Cst.EVENT_PROJECTION_ORIGINAL_INSTANCE_TIME_INDEX)
+        val originalSyncId = cursor.getString(Cst.EVENT_PROJECTION_ORIGINAL_SYNC_ID_INDEX)
+        val originalAllDay = cursor.getString(Cst.EVENT_PROJECTION_ORIGINAL_ALL_DAY_INDEX)
+        val originalId = cursor.getString(Cst.EVENT_PROJECTION_ORIGINAL_ID_INDEX)
+
         val allDay = cursor.getInt(Cst.EVENT_PROJECTION_ALL_DAY_INDEX) > 0
         val location = cursor.getString(Cst.EVENT_PROJECTION_EVENT_LOCATION_INDEX)
         val url = cursor.getString(Cst.EVENT_PROJECTION_CUSTOM_APP_URI_INDEX)
@@ -1078,6 +1085,8 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
         val event = Event()
         event.eventTitle = title ?: "New Event"
         event.eventId = eventId.toString()
+        event.originalEventId = originalId
+        event.originalExternalEventId = originalSyncId
         event.externalEventId = externalEventId
         event.guid = guid
         event.calendarId = calendarId
@@ -1087,7 +1096,9 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
         event.eventAllDay = allDay
         event.eventLocation = location
         event.eventURL = url
+        event.occurrenceDate = originalInstanceTime ?: begin
         event.recurrenceRule = parseRecurrenceRuleString(recurringRule)
+        event.exceptionDates = parseRecurringExdate(recurringExdate)
         event.eventStartTimeZone = startTimeZone
         event.eventEndTimeZone = endTimeZone
         event.availability = availability
@@ -1096,6 +1107,20 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
         event.eventColorKey = if (eventColorKey == 0) null else eventColorKey
 
         return event
+    }
+
+    /// TODO - untested
+    private fun parseRecurringExdate(recurringExdateString: String?): MutableList<Long> {
+        if (recurringExdateString == null) {
+            return mutableListOf()
+        }
+        val exdates = mutableListOf<Long>()
+        val exdateStrings = recurringExdateString.split(",")
+        for (exdateString in exdateStrings) {
+            val exdate = exdateString.toLong()
+            exdates.add(exdate)
+        }
+        return exdates
     }
 
     private fun parseRecurrenceRuleString(recurrenceRuleString: String?): RecurrenceRule? {
