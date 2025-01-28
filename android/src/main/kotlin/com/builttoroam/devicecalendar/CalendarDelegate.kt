@@ -45,6 +45,7 @@ import kotlin.io.use
 import kotlin.text.toLong
 import kotlin.text.toLongOrNull
 import android.util.Log
+import androidx.core.text.isDigitsOnly
 
 private const val RETRIEVE_CALENDARS_REQUEST_CODE = 0
 private const val RETRIEVE_EVENTS_REQUEST_CODE = RETRIEVE_CALENDARS_REQUEST_CODE + 1
@@ -1114,11 +1115,19 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
         if (recurringExdateString == null) {
             return mutableListOf()
         }
+        val timezoneAndDates = recurringExdateString.split(";")
+
+        if (timezoneAndDates.size != 2) {
+            return mutableListOf()
+        }
+
         val exdates = mutableListOf<Long>()
-        val exdateStrings = recurringExdateString.split(",")
+        val exdateStrings = timezoneAndDates[1].split(",")
         for (exdateString in exdateStrings) {
-            val exdate = exdateString.toLong()
-            exdates.add(exdate)
+            if (exdateString.isDigitsOnly()) {
+                val exdate = exdateString.toLong()
+                exdates.add(exdate)
+            }
         }
         return exdates
     }
