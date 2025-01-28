@@ -1118,12 +1118,16 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
         }
         val timezoneAndDates = recurringExdateString.split(";")
 
-        if (timezoneAndDates.size != 2) {
-            return mutableListOf()
+        if (timezoneAndDates.size == 1) {
+            return getExdates(timezoneAndDates[0])
         }
 
+        return getExdates(timezoneAndDates[1])
+    }
+
+    private fun getExdates(dateString: String): MutableList<Long> {
         val exdates = mutableListOf<Long>()
-        val exdateStrings = timezoneAndDates[1].split(",")
+        val exdateStrings = dateString.split(",")
         for (exdateString in exdateStrings) {
             if (exdateString.isDigitsOnly()) {
                 val exdate = exdateString.toLong()
