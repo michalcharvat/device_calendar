@@ -17,6 +17,7 @@ class Event {
     var eventLocation: String? = null
     var eventURL: String? = null
     var attendees: MutableList<Attendee> = mutableListOf()
+    var isDetached: Boolean = true
     var recurrenceRule: RecurrenceRule? = null
     var occurrenceDate: Long? = null
     var exceptionDates: MutableList<Long> = mutableListOf()
