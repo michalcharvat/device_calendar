@@ -1099,6 +1099,7 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
         event.occurrenceDate = originalInstanceTime ?: begin
         event.recurrenceRule = parseRecurrenceRuleString(recurringRule)
         event.exceptionDates = parseRecurringExdate(recurringExdate)
+        event.isDetached = originalSyncId != null
         event.eventStartTimeZone = startTimeZone
         event.eventEndTimeZone = endTimeZone
         event.availability = availability

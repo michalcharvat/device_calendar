@@ -51,6 +51,7 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin, EKEventViewDele
         let eventURL: String?
         let recurrenceRule: RecurrenceRule?
         let occurrenceDate: Int64?
+        let isDetached: Bool
         let organizer: Attendee?
         let reminders: [Reminder]
         let availability: Availability?
@@ -536,6 +537,7 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin, EKEventViewDele
             eventURL: ekEvent.url?.absoluteString,
             recurrenceRule: recurrenceRule,
             occurrenceDate: Int64(ekEvent.occurrenceDate.millisecondsSinceEpoch),
+            isDetached: ekEvent.isDetached,
             organizer: convertEkParticipantToAttendee(ekParticipant: ekEvent.organizer),
             reminders: reminders,
             availability: convertEkEventAvailability(ekEventAvailability: ekEvent.availability),

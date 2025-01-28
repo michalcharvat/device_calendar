@@ -51,6 +51,9 @@ class Event {
   /// A list of attendees for this event
   List<Attendee?>? attendees;
 
+  /// A Boolean value that indicates whether an event is a detached instance of a repeating event.
+  bool? isDetached;
+
   /// The recurrence rule for this event
   RecurrenceRule? recurrenceRule;
 
@@ -101,6 +104,7 @@ class Event {
       this.attendees,
       this.recurrenceRule,
       this.occurrenceDate,
+      this.isDetached,
       this.recurrenceExceptionDates,
       this.reminders,
       this.availability = Availability.Busy,
@@ -220,6 +224,8 @@ class Event {
           ? TZDateTime.fromMillisecondsSinceEpoch(startTimeZone, occurrenceTimestamp)
           : TZDateTime.now(local);
     }
+
+    isDetached = json['isDetached'];
 
     if (json['recurrenceRule'] != null) {
       // debugPrint(
