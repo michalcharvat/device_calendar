@@ -45,6 +45,7 @@ import kotlin.io.use
 import kotlin.text.toLong
 import kotlin.text.toLongOrNull
 import android.util.Log
+import androidx.core.text.isDigitsOnly
 
 private const val RETRIEVE_CALENDARS_REQUEST_CODE = 0
 private const val RETRIEVE_EVENTS_REQUEST_CODE = RETRIEVE_CALENDARS_REQUEST_CODE + 1
@@ -442,7 +443,7 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
                 eventsSelectionQuery += " AND ($eventsIdsQuery)"
             }
             if (externalEventsIds.isNotEmpty()) {
-                eventsSelectionQuery += " AND (${Events.UID_2445} IN (${externalEventsIds.joinToString()}))"
+                eventsSelectionQuery += " AND (${Events.ORIGINAL_SYNC_ID} IN (${externalEventsIds.map { "'${it}'" }.joinToString()}))"
             }
             val eventsSortOrder = Events.DTSTART + " DESC"
 
@@ -1115,11 +1116,23 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
         if (recurringExdateString == null) {
             return mutableListOf()
         }
+        val timezoneAndDates = recurringExdateString.split(";")
+
+        if (timezoneAndDates.size == 1) {
+            return getExdates(timezoneAndDates[0])
+        }
+
+        return getExdates(timezoneAndDates[1])
+    }
+
+    private fun getExdates(dateString: String): MutableList<Long> {
         val exdates = mutableListOf<Long>()
-        val exdateStrings = recurringExdateString.split(",")
+        val exdateStrings = dateString.split(",")
         for (exdateString in exdateStrings) {
-            val exdate = exdateString.toLong()
-            exdates.add(exdate)
+            if (exdateString.isDigitsOnly()) {
+                val exdate = exdateString.toLong()
+                exdates.add(exdate)
+            }
         }
         return exdates
     }

@@ -21,6 +21,8 @@ class Event {
   /// Read-only. Recurence original externalEventId
   String? originalExternalEventId;
 
+  Attendee? organizer;
+
   /// The unique identifier for this event.
   String? guid;
 
@@ -149,6 +151,8 @@ class Event {
     externalEventId = json['externalEventId'];
     originalEventId = json['originalEventId'];
     originalExternalEventId = json['originalExternalEventId'];
+    organizer =
+        json['organizer'] != null ? Attendee.fromJson(json['organizer']) : null;
     guid = json['guid'];
     calendarId = json['calendarId'];
     title = json['eventTitle'];
@@ -157,7 +161,9 @@ class Event {
     colorKey = json['eventColorKey'];
 
     var lastModifiedTimestamp = json['eventLastModified'];
-    lastModified = lastModifiedTimestamp != null ? TZDateTime.fromMillisecondsSinceEpoch(UTC, lastModifiedTimestamp) : null;
+    lastModified = lastModifiedTimestamp != null
+        ? TZDateTime.fromMillisecondsSinceEpoch(UTC, lastModifiedTimestamp)
+        : null;
 
     startTimestamp = json['eventStartDate'];
     startLocationName = json['eventStartTimeZone'];
@@ -221,7 +227,8 @@ class Event {
     if (json['occurrenceDate'] != null) {
       int? occurrenceTimestamp = json['occurrenceDate'];
       occurrenceDate = occurrenceTimestamp != null
-          ? TZDateTime.fromMillisecondsSinceEpoch(startTimeZone, occurrenceTimestamp)
+          ? TZDateTime.fromMillisecondsSinceEpoch(
+              startTimeZone, occurrenceTimestamp)
           : TZDateTime.now(local);
     }
 
@@ -404,7 +411,10 @@ class Event {
       event.url?.toString() ?? '',
       event.attendees?.map((a) => a?.toJson().toString()).join(',') ?? '',
       event.recurrenceRule?.toJson().toString() ?? '',
-      event.recurrenceExceptionDates?.map((r) => r.millisecondsSinceEpoch.toString()).join(',') ?? '',
+      event.recurrenceExceptionDates
+              ?.map((r) => r.millisecondsSinceEpoch.toString())
+              .join(',') ??
+          '',
       event.occurrenceDate?.millisecondsSinceEpoch.toString() ?? '',
       event.reminders?.map((r) => r.toJson().toString()).join(',') ?? '',
       event.availability.enumToString,
