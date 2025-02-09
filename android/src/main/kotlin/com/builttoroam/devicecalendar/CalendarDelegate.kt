@@ -443,7 +443,7 @@ class CalendarDelegate(binding: ActivityPluginBinding?, context: Context) :
                 eventsSelectionQuery += " AND ($eventsIdsQuery)"
             }
             if (externalEventsIds.isNotEmpty()) {
-                eventsSelectionQuery += " AND (${Events.UID_2445} IN (${externalEventsIds.map { "'${it}'" }.joinToString()}))"
+                eventsSelectionQuery += " AND (${Events.ORIGINAL_SYNC_ID} IN (${externalEventsIds.map { "'${it}'" }.joinToString()}))"
             }
             val eventsSortOrder = Events.DTSTART + " DESC"
 
